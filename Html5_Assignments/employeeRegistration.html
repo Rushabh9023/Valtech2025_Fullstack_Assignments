@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration Form</title>
+    <script>
+         function validateMe(){
+            document.getElementById("age").setCustomValidity("please fill this age field")
+        };
+         window.onload = validateMe;
+         function checkit(ele){
+            if(ele.value < 18){
+                ele.setCustomValidity("Age must be > 18 to fill this form");
+            }else if(ele.value > 90){
+                ele.setCustomValidity("you are too old to join us");
+            }else {
+                ele.setCustomValidity("");
+            }
+        }
+        function validateForm(event) {
+            let joinDate = document.getElementById("joinDate").value;
+            let today = new Date().toISOString().split("T")[0];
+            if (joinDate > today ) {
+                alert("Form submitted successfully!"); 
+                document.getElementById("registrationForm").reset(); 
+            }else{
+                alert("Tentative join date cannot be today or in the past.");
+                event.preventDefault();
+            }
+           
+        }
+    </script>
+</head>
+<body>
+    <h2>Employee Registration Form</h2>
+    <form action="employeeRegistration.html" id="registrationForm" method="post" onsubmit="validateForm(event)">
+        <table>
+            <tr>
+                <td><label for="firstName">First Name:</label></td>
+                <td><input type="text" id="firstName" name="firstName" required placeholder="Enter First Name"></td>
+            </tr>
+            <tr>
+                <td><label for="lastName">Last Name:</label></td>
+                <td><input type="text" name="lastName" id="lastName" required placeholder="Enter Last Name"></td>
+            </tr>
+            <tr>
+                <td><label for="email">Email:</label></td>
+                <td><input type="email" name="email" required  pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"  placeholder="Enter email"></td>
+            </tr>
+            <tr>
+                <td><label for="gender">Gender:</label></td>
+                <td>
+                    <input list="genders" id="gender" name="gender" required>
+                    <datalist id="genders">
+                        <option value="Male">
+                        <option value="Female">
+                    </datalist>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="age">Age:</label></td>
+                <td><input required oninput="checkit(this)" name="age" id="age" placeholder="Enter Age" type="number"></td>
+            </tr>
+            <tr>
+                <td><label for="city">Select City:</label></td>
+                <td>
+                    <select id="city" name="city" required>
+                        <option value="">--Select City--</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Gandhinagar">Gandhinagar</option>
+                        <option value="Baroda">Baroda</option>
+                        <option value="Jaipur">Jaipur</option>
+                        <option value="Pune">Pune</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="resume">Upload Resume:</label></td>
+                <td><input type="file" id="resume" name="resume" required accept=".doc,.docx,.pdf"></td>
+            </tr>
+            <tr>
+                <td><label for="position">Position Applying For:</label></td>
+                <td>
+                    <div>
+                        <input type="checkbox" id="Software Engineer" name="Software Engineer" checked>
+                        <label for="Software Engineer">Software Engineer</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="Project Manager" name="Project Manager">
+                        <label for="Project Manager">Project Manager</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="Data Analyst" name="Data Analyst">
+                        <label for="Data Analyst">Data Analyst</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="Backend Designer" name="Backend Designer">
+                        <label for="Backend Designer">Backend Designer</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="Frontend Designer" name="Frontend Designer">
+                        <label for="Frontend Designer">Frontend Designer</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="joinDate">Tentative Date to Join:</label></td>
+                <td><input type="date" id="joinDate" name="joinDate" required></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;"><input type="submit" value="Submit"></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holi Greeting Card</title>
+    <style>
+        canvas {
+            border: 1px solid gray;
+            display: block;
+            margin: auto;
+            background-color: rgb(239, 188, 188);
+        }
+        body {
+            
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementsByTagName("canvas")[0];
+            var ctx = canvas.getContext("2d");
+    
+            function drawSplash(x, y, size, color) {
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2, false);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.closePath();
+            }
+            function createRandomSplashes() {
+                for (var i = 0; i < 20; i++) {
+                    var x = Math.random() * 700;
+                    var y = Math.random() * 900;
+                    var size = Math.random() * 50 + 20; 
+                    var r = Math.round(Math.random() * 255);
+                    var g = Math.round(Math.random() * 255);
+                    var b = Math.round(Math.random() * 255);
+                    var a = Math.random();
+                    var color = "rgb("+r+","+g+","+b+","+a+")";
+    
+                    drawSplash(x, y, size, color);
+                }
+            }
+    
+            function drawGreeting() {
+                ctx.font = "bold 40px Arial";
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillText("Happy Holi!", 700 / 2, 900 / 2);
+            }
+    
+            function drawCard() {
+                ctx.clearRect(0, 0, 700, 900);
+                createRandomSplashes();
+                drawGreeting();
+            }
+            setInterval(drawCard, 80);
+        };
+    </script>
+    </head>
+    <body>
+    <canvas width="700" height="900"></canvas>
+    </body>
+</html>
