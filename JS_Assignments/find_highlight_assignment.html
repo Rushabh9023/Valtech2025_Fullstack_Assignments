@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    #content {
+      margin: 15px 0;
+      text-align: center;
+      max-width: 600px;
+    }
+    input, button {
+      font-size: 16px;
+      margin: 5px;
+      padding: 6px;
+    }
+    .highlight {
+      background: yellow;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Search and Highlight</h2>
+
+  <p id="content">My first name is Rushabh and second name is shah. Now find my name or any word you like.</p>
+
+  <input type="text" id="findWord" placeholder="Enter word to find" />
+
+  <div>
+    <button onclick="highlightFirst()">Find First Match</button>
+    <button onclick="highlightAll()">Find All Matches</button>
+  </div>
+
+  <script>
+
+    let content = document.getElementById("content");
+    let input = document.getElementById("findWord");
+
+    function highlightFirst() {
+      let word = input.value.trim().toLowerCase();
+      let original = content.textContent;
+      if (!word) {
+        content.innerHTML = original;
+        return;
+      }
+      let index = original.toLowerCase().indexOf(word);
+      if (index === -1) {
+        content.innerHTML = original;
+        return;
+      }
+      let before = original.slice(0, index);
+      let match = original.slice(index, index + word.length);
+      let after = original.slice(index + word.length);
+      content.innerHTML = `${before}<span class="highlight">${match}</span>${after}`;
+    }
+
+    function highlightAll() {
+      let word = input.value.trim().toLowerCase();
+      let original = content.textContent;
+      if (!word) {
+        content.innerHTML = original;
+        return;
+      }
+      let result = "";
+      let i = 0;
+      while (i < original.length) {
+        let currentSlice = original.toLowerCase().slice(i, i + word.length);
+        if (currentSlice === word) {
+          result += `<span class="highlight">${original.slice(i, i + word.length)}</span>`;
+          i += word.length;
+        } else {
+          result += original[i];
+          i++;
+        }
+      }
+      content.innerHTML = result;
+    }
+  </script>
+</body>
+</html>
