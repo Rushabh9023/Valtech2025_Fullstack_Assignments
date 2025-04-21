@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vehicle Maintenance Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+        background: linear-gradient(to right, #e6eaf9, #c4d0f4);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 550px;
+        width: 100%;
+        padding: 30px 25px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+      }
+
+      form input,
+      form select,
+      form button {
+        width: 100%;
+        font-size: 16px;
+        margin-bottom: 15px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      form input:focus,
+      form select:focus {
+        outline: none;
+        border-color: #9c9a9a;
+      }
+      form button {
+        background-color: #de4852;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      form button:hover {
+        background-color: #3b5bdb;
+      }
+      .filters {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .filters label {
+        margin-right: 10px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      #task-list .task {
+        background: #f9f9fb;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease;
+      }
+
+      #task-list .task:hover {
+        transform: translateY(-2px);
+      }
+
+      .task.completed {
+        opacity: 0.7;
+      }
+
+      .task strong {
+        font-size: 16px;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .task-buttons {
+        margin-top: 10px;
+      }
+
+      .task-buttons button {
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: none;
+        margin-right: 6px;
+        padding: 6px 10px;
+      }
+
+      .task-buttons button:nth-child(1) {
+        background-color: #39a94e;
+        color: white;
+      }
+      .task-buttons button:nth-child(2) {
+        background-color: #2398f7;
+        color: white;
+      }
+      .task-buttons button:nth-child(3) {
+        background-color: #de4852;
+        color: white;
+      }
+      .status {
+        display: inline-block;
+        font-size: 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: white;
+        margin-top: 5px;
+        padding: 3px 8px;
+      }
+
+      .status.pending {
+        background-color: #fab005;
+      }
+
+      .status.completed {
+        background-color: #151816;
+      }
+    </style>
+    <script src="store.legacy.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Vehicle Maintenance Tracker</h1>
+
+      <form id="task-form">
+        <input type="text"  id="name" placeholder="Vehicle Name"  required />
+        <input type="text" id="model" placeholder="Model" required />
+
+        <select id="task-detail" required>
+          <option value="" disabled selected>Select a task</option>
+          <option value="Air Filter Replacement">Air Filter Replacement</option>
+          <option value="Brake Inspection">Brake Inspection</option>
+          <option value="Transmission Fluid Check">
+            Transmission Fluid Check
+          </option>
+          <option value="Coolant Level Check">Coolant Level Check</option>
+          <option value="Battery Check">Battery Check</option>
+          <option value="Oil Change">Oil Change</option>
+          <option value="Tire Rotation">Tire Rotation</option>
+        </select>
+
+        <input type="date" id="due-date" required />
+        <button type="submit">Add Task</button>
+      </form>
+
+      <div class="filters">
+        <label
+          ><input type="radio" name="filter" value="all" checked /> All</label
+        >
+        <label
+          ><input type="radio" name="filter" value="pending" /> Pending</label
+        >
+        <label
+          ><input type="radio" name="filter" value="completed" />
+          Completed</label
+        >
+      </div>
+
+      <div id="task-list"></div>
+    </div>
+
+    <script>
+      let taskData = store.get("taskData") || [];
+      let currentView = "all";
+
+      const form = document.getElementById("task-form");
+      const tastList = document.getElementById("task-list");
+
+      const filterRadios = document.querySelectorAll('input[name="filter"]');
+      filterRadios.forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          currentView = e.target.value;
+          showTasks();
+        });
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let count = store.get("lastId") || 0;
+        count++;
+        store.set("lastId", count);
+
+        let task = {
+          id: count,
+          name: document.getElementById("name").value.trim(),
+          model: document.getElementById("model").value.trim(),
+          type: document.getElementById("task-detail").value,
+          date: document.getElementById("due-date").value,
+          status: false,
+        };
+
+        taskData.push(task);
+        store.set("taskData", taskData);
+
+        form.reset();
+        showTasks();
+      });
+
+      function showTasks() {
+        tastList.innerHTML = "";
+
+        let filtered = taskData;
+
+        if (currentView === "pending") {
+          filtered = taskData.filter((t) => !t.status);
+        }
+
+        if (currentView === "completed") {
+          filtered = taskData.filter((t) => t.status);
+        }
+
+        filtered.forEach((t) => {
+          let taskBox = document.createElement("div");
+          taskBox.className = "task";
+          if (t.status) {
+            taskBox.classList.add("completed");
+          }
+
+          let statusText = t.status ? "Completed" : "Pending";
+          let statusClass = t.status ? "completed" : "pending";
+
+          taskBox.innerHTML = `
+      <strong>${t.name} (${t.model})</strong>
+      Task: ${t.type}
+      <br/>Due: ${t.date}
+      <br/>
+      <span class="status ${statusClass}">${statusText}</span>
+
+      <div class="task-buttons">
+        <button onclick="changeStatus(${t.id})">
+          ${t.status ? "Undo" : "Complete"}
+        </button>
+        <button onclick="editTask(${t.id})">Edit</button>
+        <button onclick="deleteTask(${t.id})">Delete</button>
+      </div>
+    `;
+
+          tastList.appendChild(taskBox);
+        });
+      }
+
+      function changeStatus(id) {
+        let task = taskData.find((t) => t.id === id);
+        if (task) {
+          task.status = !task.status;
+          store.set("taskData", taskData);
+          showTasks();
+        }
+      }
+
+      function editTask(id) {
+        let task = taskData.find((t) => t.id === id);
+        if (task) {
+          document.getElementById("name").value = task.name;
+          document.getElementById("model").value = task.model;
+          document.getElementById("task-detail").value = task.type;
+          document.getElementById("due-date").value = task.date;
+
+          deleteTask(id);
+        }
+      }
+
+      function deleteTask(id) {
+        taskData = taskData.filter((t) => t.id !== id);
+        store.set("taskData", taskData);
+        showTasks();
+      }
+
+      window.addEventListener("load", showTasks);
+    </script>
+  </body>
+</html>
